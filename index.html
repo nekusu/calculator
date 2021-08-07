@@ -5,11 +5,42 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
 	<link rel="stylesheet" href="css/main.css">
 	<title>Calculator</title>
 </head>
 
 <body>
+	<div class="box" id="calculator">
+		<div id="display">
+			<div id="last">‎
+			</div>
+			<div id="current">0</div>
+		</div>
+		<div id="buttons">
+			<button class="button" id="clear">C</button>
+			<button class="button" id="delete"><span class="material-icons-outlined">backspace</span></button>
+			<button class="button" data-func="mod">%</button>
+			<button class="button" data-func="divide">÷</button>
+			<button class="button" data-number="7">7</button>
+			<button class="button" data-number="8">8</button>
+			<button class="button" data-number="9">9</button>
+			<button class="button" data-func="multiply">×</button>
+			<button class="button" data-number="4">4</button>
+			<button class="button" data-number="5">5</button>
+			<button class="button" data-number="6">6</button>
+			<button class="button" data-func="subtract">-</button>
+			<button class="button" data-number="1">1</button>
+			<button class="button" data-number="2">2</button>
+			<button class="button" data-number="3">3</button>
+			<button class="button" data-func="add">+</button>
+			<button class="button" id="plus-minus">+/-</button>
+			<button class="button" data-number="0">0</button>
+			<button class="button" data-number=".">.</button>
+			<button class="button" id="operate">=</button>
+		</div>
+	</div>
 	<script type="text/javascript" src="js/calculator.js"></script>
 </body>
 

@@ -1,0 +1,107 @@
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	box-sizing: border-box;
+	outline: none;
+	font-family: Poppins;
+}
+
+:root {
+	--background: black;
+	--background-alt: rgb(210, 240, 225);
+	--text: rgb(190, 190, 190);
+	--text-alt: rgb(240, 240, 240);
+	--radius: 25px;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: var(--background-alt);
+}
+
+.box {
+	color: var(--text-alt);
+	border-radius: var(--radius);
+	background-color: var(--background);
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+#calculator {
+	padding: 24px;
+	margin: 30px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+#display {
+	width: 100%;
+	padding: 10px 25px 5px;
+	text-align: end;
+}
+
+#display #last {
+	margin: 0 1px 6px;
+	font-size: 22px;
+	color: var(--text);
+}
+
+#display #current {
+	font-size: 28px;
+	color: white;
+}
+
+#buttons {
+	display: grid;
+	grid: repeat(5, 70px) / repeat(4, 70px);
+}
+
+.button {
+	margin: 6px;
+	font-size: 22px;
+	font-weight: 600;
+	cursor: pointer;
+	color: var(--text-alt);
+	border-radius: 30px;
+	background-color: transparent;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.button > span {
+	vertical-align: sub;
+}
+
+.button[id="plus-minus"] {
+	font-size: 20px;
+}
+
+.button[data-func],
+.button[id] {
+	color: rgb(0, 255, 135);
+}
+
+.button[id="operate"]{
+	background-color: rgb(0, 255, 135);
+	color: var(--background);
+}
+
+.button:hover {
+	background-color: rgba(150, 255, 200, 0.125);
+}
+
+.button[id="operate"]:hover {
+	background-color: rgb(0, 255, 135);
+	transform: scale(1.1);
+}
+
+.button:active {
+	transform: scale(0.875);
+}
+
+.button[id="operate"]:active {
+	transform: scale(0.95);
+}
