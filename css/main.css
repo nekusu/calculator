@@ -36,15 +36,18 @@ body {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	overflow-wrap: break-word;
 }
 
 #display {
 	width: 100%;
+	max-width: 288px;
 	padding: 10px 25px 5px;
 	text-align: end;
 }
 
 #display #last {
+	min-height: 33px;
 	margin: 0 1px 6px;
 	font-size: 22px;
 	color: var(--text);
@@ -57,11 +60,11 @@ body {
 
 #buttons {
 	display: grid;
-	grid: repeat(5, 70px) / repeat(4, 70px);
+	grid: repeat(5, 72px) / repeat(4, 72px);
 }
 
 .button {
-	margin: 6px;
+	margin: 7px;
 	font-size: 22px;
 	font-weight: 600;
 	cursor: pointer;
@@ -79,7 +82,7 @@ body {
 	font-size: 20px;
 }
 
-.button[data-func],
+.button[data-operator],
 .button[id] {
 	color: rgb(0, 255, 135);
 }
