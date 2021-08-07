@@ -113,9 +113,19 @@ function percent() {
 	currentDisplay.textContent = getCalculation();
 }
 
+function togglePlusMinus() {
+	if (operands[1] != 0) {
+		operands[1] = operands[1].includes('-') ? operands[1].slice(1) : `-${operands[1]}`;
+	} else if (!func && operands[0] != 0) {
+		operands[0] = operands[0].includes('-') ? operands[0].slice(1) : `-${operands[0]}`;
+	}
+	currentDisplay.textContent = getCalculation();
+}
+
 numberButtons.forEach(button => button.addEventListener('click', inputNumber));
 operatorButtons.forEach(button => button.addEventListener('click', inputOperator));
 clearButton.addEventListener('click', clearData);
 deleteButton.addEventListener('click', deleteCharacter);
 percentButton.addEventListener('click', percent);
+plusMinusButton.addEventListener('click', togglePlusMinus);
 equalsButton.addEventListener('click', operate);
