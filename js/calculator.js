@@ -22,6 +22,7 @@ const operations = [{
 	altOperator: '/',
 	func: divide
 }];
+const maxLength = 12;
 const operands = ['0', ''];
 let func = null;
 
@@ -44,7 +45,7 @@ function divide(a, b) {
 function inputNumber(e) {
 	const num = e.target.dataset.number;
 	const i = !func ? 0 : 1;
-	if (!operands[i].includes('.') || num !== '.') {
+	if (operands[i].length < maxLength && (!operands[i].includes('.') && !operands[i].includes('e') || num !== '.')) {
 		operands[i] = (operands[i] === '0' && num !== '.') ? num : operands[i] + num;
 	}
 	currentDisplay.textContent = getCalculation();
@@ -61,35 +62,58 @@ function inputOperator(e) {
 
 function getCalculation() {
 	const operator = func ? ` ${operations.find(key => key.func === func).operator} ` : '';
-	const value = operands[0] + operator + operands[1];
+	const value = addCommas(operands[0]) + operator + addCommas(operands[1]);
 	return value.trimRight();
 }
 
-function round(num, decimals) {
-	return (+num.toPrecision(decimals)).toString();
+function round(num, digits) {
+	num = +num.toFixed(digits) || NaN;
+	return num.toString();
+}
+
+function addCommas(num) {
+	const string = num.toString().split('.');
+	string[0] = string[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return string.join('.');
+}
+
+function restartTransition(el) {
+	el.style.transitionDuration = '0s';
+	el.classList.add('hidden');
+	el.getBoundingClientRect();
+	el.style.transitionDuration = '';
+	el.classList.remove('hidden');
 }
 
 function operate() {
 	const [a, b] = [operands[0], operands[1]];
 	if (func && a && b) {
-		const result = round(func(+a, +b), 7);
+		const result = round(func(+a, +b), maxLength);
 		showResult(result);
 	}
 }
 
 function showResult(result) {
+	lastDisplay.removeEventListener('transitionend', clearLastDisplay);
+	restartTransition(lastDisplay);
 	lastDisplay.textContent = getCalculation();
-	currentDisplay.textContent = `= ${result}`;
+	restartTransition(currentDisplay);
+	currentDisplay.textContent = `= ${addCommas(result)}`;
 	func = null;
 	operands[0] = (['Infinity', 'NaN'].includes(result)) ? '0' : result;
 	operands[1] = '';
+}
+
+function clearLastDisplay() {
+	lastDisplay.textContent = '';
 }
 
 function clearData() {
 	func = null;
 	operands[0] = '0';
 	operands[1] = '';
-	lastDisplay.textContent = '';
+	lastDisplay.classList.add('hidden');
+	lastDisplay.addEventListener('transitionend', clearLastDisplay, { once: true });
 	currentDisplay.textContent = '0';
 }
 
@@ -104,11 +128,11 @@ function deleteCharacter() {
 	currentDisplay.textContent = getCalculation();
 }
 
-function percent() {
+function getPercent() {
 	if (operands[1] != 0) {
-		operands[1] = round(operands[1] / 100, 7);
+		operands[1] = round(operands[1] / 100, maxLength);
 	} else if (!func && operands[0] != 0) {
-		operands[0] = round(operands[0] / 100, 7);
+		operands[0] = round(operands[0] / 100, maxLength);
 	}
 	currentDisplay.textContent = getCalculation();
 }
@@ -126,6 +150,6 @@ numberButtons.forEach(button => button.addEventListener('click', inputNumber));
 operatorButtons.forEach(button => button.addEventListener('click', inputOperator));
 clearButton.addEventListener('click', clearData);
 deleteButton.addEventListener('click', deleteCharacter);
-percentButton.addEventListener('click', percent);
+percentButton.addEventListener('click', getPercent);
 plusMinusButton.addEventListener('click', togglePlusMinus);
 equalsButton.addEventListener('click', operate);
