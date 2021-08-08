@@ -15,11 +15,9 @@ const operations = [{
 	func: subtract
 }, {
 	operator: '×',
-	altOperator: '*',
 	func: multiply
 }, {
 	operator: '÷',
-	altOperator: '/',
 	func: divide
 }];
 const maxLength = 12;
@@ -45,7 +43,9 @@ function divide(a, b) {
 function inputNumber(e) {
 	const num = e.target.dataset.number;
 	const i = !func ? 0 : 1;
-	if (operands[i].length < maxLength && (!operands[i].includes('.') && !operands[i].includes('e') || num !== '.')) {
+	const lengthExceeded = operands[i].replace('-', '').length >= maxLength;
+	const decimalPointAllowed = !operands[i].includes('.') && !operands[i].includes('e');
+	if (!lengthExceeded && (decimalPointAllowed || num !== '.')) {
 		operands[i] = (operands[i] === '0' && num !== '.') ? num : operands[i] + num;
 	}
 	currentDisplay.textContent = getCalculation();
@@ -67,7 +67,7 @@ function getCalculation() {
 }
 
 function round(num, digits) {
-	num = +num.toFixed(digits) || NaN;
+	num = +num.toFixed(digits);
 	return num.toString();
 }
 
@@ -88,7 +88,7 @@ function restartTransition(el) {
 function operate() {
 	const [a, b] = [operands[0], operands[1]];
 	if (func && a && b) {
-		const result = round(func(+a, +b), maxLength);
+		const result = round(func(+a, +b), maxLength / 1.25);
 		showResult(result);
 	}
 }
@@ -130,9 +130,9 @@ function deleteCharacter() {
 
 function getPercent() {
 	if (operands[1] != 0) {
-		operands[1] = round(operands[1] / 100, maxLength);
+		operands[1] = round(operands[1] / 100, maxLength / 1.25);
 	} else if (!func && operands[0] != 0) {
-		operands[0] = round(operands[0] / 100, maxLength);
+		operands[0] = round(operands[0] / 100, maxLength / 1.25);
 	}
 	currentDisplay.textContent = getCalculation();
 }
@@ -146,6 +146,18 @@ function togglePlusMinus() {
 	currentDisplay.textContent = getCalculation();
 }
 
+function checkKey(e) {
+	e.preventDefault();
+	if (+e.key) {
+		document.querySelector(`.button[data-number="${e.key}"]`).click();
+	} else {
+		button = document.querySelector(`.button[data-key="${e.key}"]`)
+		if (button) {
+			button.click();
+		}
+	}
+}
+
 numberButtons.forEach(button => button.addEventListener('click', inputNumber));
 operatorButtons.forEach(button => button.addEventListener('click', inputOperator));
 clearButton.addEventListener('click', clearData);
@@ -153,3 +165,4 @@ deleteButton.addEventListener('click', deleteCharacter);
 percentButton.addEventListener('click', getPercent);
 plusMinusButton.addEventListener('click', togglePlusMinus);
 equalsButton.addEventListener('click', operate);
+window.addEventListener('keydown', checkKey);

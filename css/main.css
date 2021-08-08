@@ -115,13 +115,18 @@ body {
 	color: var(--background);
 }
 
-.button:hover {
+.button:hover,
+.button:active {
 	background-color: rgba(150, 255, 200, 0.125);
 }
 
 .button[id="operate"]:hover {
 	background-color: rgb(0, 255, 135);
 	transform: scale(1.1);
+}
+
+.button[id="operate"]:active {
+	background-color: rgb(0, 255, 135);
 }
 
 .button:active {
