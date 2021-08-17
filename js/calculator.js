@@ -100,7 +100,7 @@ function showResult(result) {
 	restartTransition(currentDisplay);
 	currentDisplay.textContent = `= ${addCommas(result)}`;
 	func = null;
-	operands[0] = (['Infinity', 'NaN'].includes(result)) ? '0' : result;
+	operands[0] = /(\-*Infinity)|NaN/.test(result) ? '0' : result;
 	operands[1] = '';
 }
 
@@ -118,12 +118,15 @@ function clearData() {
 }
 
 function deleteCharacter() {
+	let strSlice;
 	if (func && operands[1]) {
-		operands[1] = operands[1].slice(0, -1);
+		strSlice = operands[1].slice(0, -1);
+		operands[1] = strSlice !== '-' ? strSlice : '';
 	} else if (func) {
 		func = null;
 	} else {
-		operands[0] = operands[0].slice(0, -1) || '0';
+		strSlice = operands[0].slice(0, -1);
+		operands[0] = strSlice && strSlice !== '-' ? strSlice : '0';
 	}
 	currentDisplay.textContent = getCalculation();
 }
