@@ -1,6 +1,6 @@
 const lastDisplay = document.querySelector('#display #last');
 const currentDisplay = document.querySelector('#display #current');
-const numberButtons = document.querySelectorAll('button[data-number]');
+const characterButtons = document.querySelectorAll('button[data-character]');
 const operatorButtons = document.querySelectorAll('button[data-operator]');
 const clearButton = document.querySelector('#clear');
 const deleteButton = document.querySelector('#delete');
@@ -9,64 +9,46 @@ const plusMinusButton = document.querySelector('#plus-minus');
 const equalsButton = document.querySelector('#operate');
 const operations = [{
 	operator: '+',
-	func: add
+	func: (a, b) => a + b
 }, {
 	operator: '-',
-	func: subtract
+	func: (a, b) => a - b
 }, {
 	operator: '×',
-	func: multiply
+	func: (a, b) => a * b
 }, {
 	operator: '÷',
-	func: divide
+	func: (a, b) => a / b
 }];
 const maxLength = 12;
 const operands = ['0', ''];
 let func = null;
 
-function add(a, b) {
-	return a + b;
-}
-
-function subtract(a, b) {
-	return a - b;
-}
-
-function multiply(a, b) {
-	return a * b;
-}
-
-function divide(a, b) {
-	return a / b;
-}
-
-function inputNumber(e) {
-	const num = e.target.dataset.number;
-	const i = !func ? 0 : 1;
-	const lengthExceeded = operands[i].replace('-', '').length >= maxLength;
-	const decimalPointAllowed = !operands[i].includes('.') && !operands[i].includes('e');
-	if (!lengthExceeded && (decimalPointAllowed || num !== '.')) {
-		operands[i] = (operands[i] === '0' && num !== '.') ? num : operands[i] + num;
-	}
-	currentDisplay.textContent = getCalculation();
+function inputCharacter(e) {
+	const i = func ? 1 : 0;
+	const character = e.target.dataset.character;
+	const lengthExceeded = operands[i].length >= maxLength;
+	const decimalPointAllowed = !operands[i].match(/\.|e/g);
+	if (lengthExceeded || (character === '.' && !decimalPointAllowed)) return;
+	if (operands[i] == 0) operands[i] = '';
+	operands[i] += character;
+	updateDisplay()
 }
 
 function inputOperator(e) {
-	if (operands[1]) {
-		operate();
-	}
+	if (operands[1]) operate();
 	const operator = e.target.dataset.operator;
 	func = operations.find(key => key.operator === operator).func;
-	currentDisplay.textContent = getCalculation();
+	updateDisplay()
 }
 
 function getCalculation() {
 	const operator = func ? ` ${operations.find(key => key.func === func).operator} ` : '';
-	const value = addCommas(operands[0]) + operator + addCommas(operands[1]);
-	return value.trimRight();
+	const value = operands.map(operand => addCommas(operand)).join(operator);
+	return value.trimEnd();
 }
 
-function round(num, digits) {
+function round(num, digits = maxLength) {
 	num = +num.toFixed(digits);
 	return num.toString();
 }
@@ -86,9 +68,9 @@ function restartTransition(el) {
 }
 
 function operate() {
-	const [a, b] = [operands[0], operands[1]];
-	if (func && a && b) {
-		const result = round(func(+a, +b), maxLength / 1.25);
+	const [a, b] = operands;
+	if (func && a && b && b !== '.') {
+		const result = round(func(+a, +b));
 		showResult(result);
 	}
 }
@@ -102,6 +84,10 @@ function showResult(result) {
 	func = null;
 	operands[0] = /(\-*Infinity)|NaN/.test(result) ? '0' : result;
 	operands[1] = '';
+}
+
+function updateDisplay() {
+	currentDisplay.textContent = getCalculation();
 }
 
 function clearLastDisplay() {
@@ -128,31 +114,27 @@ function deleteCharacter() {
 		strSlice = operands[0].slice(0, -1);
 		operands[0] = strSlice && strSlice !== '-' ? strSlice : '0';
 	}
-	currentDisplay.textContent = getCalculation();
+	updateDisplay()
 }
 
 function getPercent() {
-	if (operands[1] != 0) {
-		operands[1] = round(operands[1] / 100, maxLength / 1.25);
-	} else if (!func && operands[0] != 0) {
-		operands[0] = round(operands[0] / 100, maxLength / 1.25);
-	}
-	currentDisplay.textContent = getCalculation();
+	const i = func ? 1 : 0;
+	if (operands[i] == 0) return;
+	operands[i] = round(operands[i] / 100);
+	updateDisplay()
 }
 
 function togglePlusMinus() {
-	if (operands[1] != 0) {
-		operands[1] = operands[1].includes('-') ? operands[1].slice(1) : `-${operands[1]}`;
-	} else if (!func && operands[0] != 0) {
-		operands[0] = operands[0].includes('-') ? operands[0].slice(1) : `-${operands[0]}`;
-	}
-	currentDisplay.textContent = getCalculation();
+	const i = func ? 1 : 0;
+	if (operands[i] == 0) return;
+	operands[i] = operands[i].includes('-') ? operands[i].slice(1) : `-${operands[i]}`;
+	updateDisplay()
 }
 
 function checkKey(e) {
 	e.preventDefault();
 	if (+e.key) {
-		document.querySelector(`.button[data-number="${e.key}"]`).click();
+		document.querySelector(`.button[data-character="${e.key}"]`).click();
 	} else {
 		button = document.querySelector(`.button[data-key="${e.key}"]`)
 		if (button) {
@@ -161,7 +143,7 @@ function checkKey(e) {
 	}
 }
 
-numberButtons.forEach(button => button.addEventListener('click', inputNumber));
+characterButtons.forEach(button => button.addEventListener('click', inputCharacter));
 operatorButtons.forEach(button => button.addEventListener('click', inputOperator));
 clearButton.addEventListener('click', clearData);
 deleteButton.addEventListener('click', deleteCharacter);
